@@ -42,7 +42,7 @@ class OracleSchema extends BaseSchema
             $table = 'all_procedures';
             $useOwner = true;
             $params = [':ownerParam' => strtoupper($config['schema'])];
-            $ownerCondition = 'AND OWNER = :ownerParam';
+            $ownerCondition = ' AND OWNER = :ownerParam';
         }
         $objectNameField = $this->_transformFieldCase("OBJECT_NAME");
         $procedureName = $this->_transformFieldCase("PROCEDURE_NAME");
@@ -605,14 +605,17 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritDoc} 
+     *
+     * 08/06/2017 RUG: messo convert filed case per la colonna in indeice (se no me la mette sempre maiuscola
      */
     public function convertForeignKeyDescription(Table $table, $row)
     {
         $row = array_change_key_case($row);
         $data = [
             'type' => Table::CONSTRAINT_FOREIGN,
-            'columns' => strtoupper($row['column_name']),
+            //'columns' => strtoupper($row['column_name']),
+	    'columns' => $this->_transformValueCase($row['column_name']),
             'references' => [
                 $row['referenced_owner'] . '.' . $row['referenced_table_name'],
                 strtoupper($row['referenced_column_name'])

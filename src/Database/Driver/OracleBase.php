@@ -52,6 +52,9 @@ abstract class OracleBase extends Driver
     /**
      * Establishes a connection to the database server
      *
+     * RUG: modifica degli script di init con i valori in ingresso dalla configurazione
+     * 
+     * 
      * @return bool true on success
      */
     public function connect()
@@ -61,8 +64,27 @@ abstract class OracleBase extends Driver
         }
         $config = $this->_config;
 
-        $config['init'][] = "ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS' NLS_TIMESTAMP_FORMAT='YYYY-MM-DD HH24:MI:SS' NLS_TIMESTAMP_TZ_FORMAT='YYYY-MM-DD HH24:MI:SS'";
+        $config['init'] = [];
 
+        /*
+         * RUG:
+         * se passati formati mask in ingresso creo gli script per eseguirli
+         */
+        if (isset($config['nls_date_format'])) {
+            $command = "ALTER SESSION SET NLS_DATE_FORMAT='".$config['nls_date_format']."'";
+            array_push($config['init'], $command);
+        }
+        if (isset($config['nls_timestamp_format'])) {
+            $command = "ALTER SESSION SET NLS_TIMESTAMP_FORMAT='".$config['nls_timestamp_format']."'";
+            array_push($config['init'], $command);
+            $command = "ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT='".$config['nls_timestamp_format']."'";
+            array_push($config['init'], $command);
+        }
+        if (isset($config['nls_numeric_characters'])) {
+            $command = "ALTER SESSION SET NLS_NUMERIC_CHARACTERS ='".$config['nls_numeric_characters']."'";
+            array_push($config['init'], $command);
+        }
+        
         $config['flags'] += [
             // PDO::ATTR_CASE => PDO::CASE_LOWER, // @todo move to config setting
             PDO::NULL_EMPTY_STRING => true,

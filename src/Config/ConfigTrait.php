@@ -76,10 +76,12 @@ trait ConfigTrait
      */
     public function config($key = null, $value = null, $merge = true)
     {
+	/* RUG: sovrascrive la conf corretta con una mai definita (defualtConfig)!!!
         if (!$this->_configInitialized) {
             $this->_config = $this->_defaultConfig;
             $this->_configInitialized = true;
         }
+	*/
 
         if (is_array($key) || func_num_args() >= 2) {
             $this->_configWrite($key, $value, $merge);
@@ -240,10 +242,12 @@ trait ConfigTrait
      */
     public function configShallow($key, $value = null)
     {
+	/* RUG: sovrascrive la conf corretta con una mai definita (defualtConfig)!!!
         if (!$this->_configInitialized) {
             $this->_config = $this->_defaultConfig;
             $this->_configInitialized = true;
         }
+	*/
 
         $this->_configWrite($key, $value, 'shallow');
         return $this;

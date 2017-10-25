@@ -25,7 +25,9 @@ class OracleOCI extends OracleBase
      */
     protected function _connect($dsn, array $config)
     {
-        $connection = new OCI8Connection($dsn, $config['username'], $config['password'], $config['flags']);
+	// RUG: passo la configurazione completa alla connection
+        // $connection = new OCI8Connection($dsn, $config['username'], $config['password'], $config['flags']);
+        $connection = new OCI8Connection($dsn, $config['username'], $config['password'], $config);	
         $this->connection($connection);
         return true;
 
@@ -62,7 +64,8 @@ class OracleOCI extends OracleBase
      */
     public function lastInsertId($table = null, $column = null)
     {
-        $sequenceName = 'seq_' . strtolower($table);
+	//$sequenceName = 'seq_' . strtolower($table);
+        $sequenceName = strtolower($table) . '_seq';
         $this->connect();
         $statement = $this->_connection->query("SELECT {$sequenceName}.CURRVAL FROM DUAL");
         $result = $statement->fetch(PDO::FETCH_NUM);
