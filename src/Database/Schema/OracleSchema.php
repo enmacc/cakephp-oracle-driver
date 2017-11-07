@@ -693,15 +693,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
         if (($data['type'] === 'float' || $data['type'] === 'decimal') && (isset($data['length']) || isset($data['precision']))) {
             $out .= '(' . (int)$data['length'] . ',' . (int)$data['precision'] . ')';
         }
-
-        if (isset($data['null']) && $data['null'] === false) {
-            $out .= ' NOT NULL';
-        }
-        if (isset($data['null']) && $data['null'] === true) {
-            $out .= ' DEFAULT NULL';
-            unset($data['default']);
-        }
-        // @FIXED by me, cast to int first default after null (maybe)
+        // @FIXED by me, cast to int and first default after null
         if (isset($data['default']) && $data['type'] !== 'timestamp') {
             $defaultValue = $data['default'];
             if ($data['type'] === 'boolean') {
@@ -712,6 +704,15 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
             }
             $out .= ' DEFAULT ' . $this->_driver->schemaValue($defaultValue);
         }
+        
+        if (isset($data['null']) && $data['null'] === false) {
+            $out .= ' NOT NULL';
+        }
+        if (isset($data['null']) && $data['null'] === true) {
+            $out .= ' DEFAULT NULL';
+            unset($data['default']);
+        }  
+        
         return $out;
     }
 
