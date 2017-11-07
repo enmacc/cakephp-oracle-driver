@@ -701,10 +701,14 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
             $out .= ' DEFAULT NULL';
             unset($data['default']);
         }
+        // @FIXED by me, cast to int first default after null (maybe)
         if (isset($data['default']) && $data['type'] !== 'timestamp') {
             $defaultValue = $data['default'];
             if ($data['type'] === 'boolean') {
-                $defaultValue = (int)$defaultValue;
+                $defaultValue = (int) $defaultValue;
+            }
+            if ($data['type'] === 'integer' || $data['type'] === 'biginteger') {
+                $defaultValue = (int) $defaultValue;
             }
             $out .= ' DEFAULT ' . $this->_driver->schemaValue($defaultValue);
         }
