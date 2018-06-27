@@ -189,6 +189,24 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
                 ];
                 break;
             case 'NUMBER':
+                if ($row['data_precision'] == 1) {
+                    $field = [
+                        'type' => 'integer',
+                        'length' => null
+                    ];
+                } elseif ($row['data_scale'] > 0) {
+                    $field = [
+                        'type' => 'decimal',
+                        'length' => $row['data_precision'],
+                        'precision' => $row['data_scale']
+                    ];
+                } else {
+                    $field = [
+                        'type' => 'integer',
+                        'length' => $row['data_precision']
+                    ];
+                }
+                break;
             case 'INTEGER':
             case 'PLS_INTEGER':
             case 'BINARY_INTEGER':
@@ -355,6 +373,24 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
                 ];
                 break;
             case 'NUMBER':
+                if ($row['data_precision'] == 1) {
+                    $field = [
+                        'type' => 'integer',
+                        'length' => null
+                    ];
+                } elseif ($row['data_scale'] > 0) {
+                    $field = [
+                        'type' => 'decimal',
+                        'length' => $row['data_precision'],
+                        'precision' => $row['data_scale']
+                    ];
+                } else {
+                    $field = [
+                        'type' => 'integer',
+                        'length' => $row['data_precision']
+                    ];
+                }
+                break;
             case 'INTEGER':
             case 'PLS_INTEGER':
             case 'BINARY_INTEGER':
@@ -650,6 +686,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
     {
         $data = $table->column($name);
         $out = $this->_driver->quoteIfAutoQuote($name);
+        $flagDefault = false;
         $typeMap = [
             'integer' => ' NUMBER',
             'biginteger' => ' NUMBER',
@@ -702,13 +739,17 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
             if ($data['type'] === 'integer' || $data['type'] === 'biginteger') {
                 $defaultValue = (int) $defaultValue;
             }
+            if ($data['type'] === 'string' ) {
+                $defaultValue = str_replace('\'', '', $defaultValue);
+            }
             $out .= ' DEFAULT ' . $this->_driver->schemaValue($defaultValue);
+            $flagDefault = true;
         }
         
-        if (isset($data['null']) && $data['null'] === false) {
+        if (isset($data['null']) && $data['null'] === false && !$flagDefault) {
             $out .= ' NOT NULL';
         }
-        if (isset($data['null']) && $data['null'] === true) {
+        if (isset($data['null']) && $data['null'] === true && !$flagDefault) {
             $out .= ' DEFAULT NULL';
             unset($data['default']);
         }  

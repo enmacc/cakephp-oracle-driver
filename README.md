@@ -1,3 +1,51 @@
+# CakePHP 3 Driver da usare nelle nostre webapp
+
+Una fork del progetto originale con le nostre modifiche al driver
+
+La fork viene utilizzata con le sue specifiche , per il path e autoload, quindi nella web app non cambia nulla.
+
+Al download con composer viene caricata la versione da questo sorgente.
+
+Si deve modificare il composer.json, aggiungere la riga
+
+```
+"repositories": [
+      {
+        "type": "vcs",            
+            "url": "https://repo00.personale.dir.unibo.it/enrico/cakephp-oracle-driver.git"
+      }
+    ],  
+```
+
+all'inizio, nel mio caso, ad esempio:
+```
+{
+    "name": "cakephp/app",
+    "description": "CakePHP skeleton app",
+    "homepage": "https://cakephp.org",
+    "type": "project",
+    "license": "MIT",
+    "repositories": [
+      {
+        "type": "vcs",            
+              "url": "https://repo00.personale.dir.unibo.it/enrico/cakephp-oracle-driver.git"   
+      }
+    ],  
+    "require": {
+        "php": ">=5.6",
+        "cakephp/cakephp": "3.5.*",
+        "mobiledetect/mobiledetectlib": "2.*",
+        "cakephp/migrations": "~1.0",
+        "cakephp/plugin-installer": "~1.0",
+        "josegonzalez/dotenv": "2.*"
+    },
+    ...
+    
+```
+Il composer.json da modificare è quello della web app che deve caricare il driver, non quello del driver stesso
+
+Funziona da riga di comando e da ide NetBeans
+
 # CakePHP 3 Driver for Oracle Database
 
 [![Downloads](https://poser.pugx.org/cakedc/cakephp-oracle-driver/d/total.png)](https://packagist.org/packages/cakedc/cakephp-oracle-driver)
