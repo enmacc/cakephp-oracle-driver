@@ -1,5 +1,7 @@
 # CakePHP 3 Driver da usare nelle nostre webapp
 
+Progetto su github mio con utente gmail
+
 Una fork del progetto originale con le nostre modifiche al driver
 
 La fork viene utilizzata con le sue specifiche , per il path e autoload, quindi nella web app non cambia nulla.
