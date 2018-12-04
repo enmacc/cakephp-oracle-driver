@@ -273,12 +273,14 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
                 break;
             default:
         }
-        $field += [
-            'null' => $row['null'] === 'Y' ? true : false,
-            'default' => $row['default'],
-            'comment' => $row['comment']
-        ];
+        if(isset($field)){
+            $field += [
+                'null' => $row['null'] === 'Y' ? true : false,
+                'default' => $row['default'],
+                'comment' => $row['comment']
+            ];
         $table->addColumn($this->_transformValueCase($row['name']), $field);
+        }
     }
 
     /**
@@ -563,10 +565,12 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
             $columns = array_merge($existing['columns'], $columns);
         }
         if ($isIndex) {
-            $table->addIndex($keyName, [
-                'type' => $type,
-                'columns' => $columns,
-            ]);
+             if($tableIndex['type'] == 'NORMAL'){
+                $table->addIndex($keyName, [
+                    'type' => $type,
+                    'columns' => $columns,
+                ]);
+             }
         } else {
             $table->addConstraint($keyName, [
                 'type' => $type,
