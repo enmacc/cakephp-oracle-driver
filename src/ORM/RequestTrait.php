@@ -442,7 +442,7 @@ trait RequestTrait
             throw new InvalidArgumentException('Cannot fetch cursor for parameter that have wrong type');
         }
         $property = $this->get($name);
-        $statement = $this->_repository->connection()->prepareMethod($property);
+        $statement = $this->_repository->getConnection()->prepareMethod($property);
         $statement->queryString = __('fetch {0} cursor', $name);
         $statement->execute();
         return new ResultSet($this->_repository, $statement, $options);

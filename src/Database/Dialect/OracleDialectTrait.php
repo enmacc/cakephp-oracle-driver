@@ -96,7 +96,7 @@ trait OracleDialectTrait
         $query->limit(null)
             ->offset(null);
 
-        $outer = new Query($query->connection());
+        $outer = new Query($query->getConnection());
         $outer
             ->select([
                 'cake_paging.*',
@@ -104,7 +104,7 @@ trait OracleDialectTrait
             ])
             ->from(['cake_paging' => $query]);
 
-        $outer2 = new Query($query->connection());
+        $outer2 = new Query($query->getConnection());
         $outer2->select('*')
             ->from(['cake_paging_out' => $outer]);
 
@@ -148,13 +148,13 @@ trait OracleDialectTrait
      */
     protected function _transformFunctionExpression(FunctionExpression $expression)
     {
-        switch ($expression->name()) {
+        switch ($expression->getName()) {
             case 'CONCAT':
-                $expression->name('')->type(' ||');
+                $expression->setName('')->type(' ||');
                 break;
             case 'DATEDIFF':
                 $expression
-                    ->name('')
+                    ->setName('')
                     ->type('-')
                     ->iterateParts(function ($p) {
                         if (is_string($p)) {
@@ -168,18 +168,18 @@ trait OracleDialectTrait
                 break;
             case 'CURRENT_DATE':
                 $time = new FunctionExpression('LOCALTIMESTAMP', [' 0 ' => 'literal']);
-                $expression->name('TO_CHAR')->add([$time, 'YYYY-MM-DD']);
+                $expression->setName('TO_CHAR')->add([$time, 'YYYY-MM-DD']);
                 break;
             case 'CURRENT_TIME':
                 $time = new FunctionExpression('LOCALTIMESTAMP', [' 0 ' => 'literal']);
-                $expression->name('TO_CHAR')->add([$time, 'YYYY-MM-DD HH24:MI:SS']);
+                $expression->setName('TO_CHAR')->add([$time, 'YYYY-MM-DD HH24:MI:SS']);
                 break;
             case 'NOW':
-                $expression->name('LOCALTIMESTAMP')->add([' 0 ' => 'literal']);
+                $expression->setName('LOCALTIMESTAMP')->add([' 0 ' => 'literal']);
                 break;
             case 'DATE_ADD':
                 $expression
-                    ->name('TO_CHAR')
+                    ->setName('TO_CHAR')
                     ->type(' + INTERVAL')
                     ->iterateParts(function ($p, $key) {
                         if ($key === 1) {
@@ -194,7 +194,7 @@ trait OracleDialectTrait
                 break;
             case 'DAYOFWEEK':
                 $expression
-                    ->name('TO_CHAR')
+                    ->setName('TO_CHAR')
                     ->add(['d']);
                 break;
         }
@@ -289,16 +289,16 @@ trait OracleDialectTrait
     protected function _insertQueryTranslator($query)
     {
         $v = $query->clause('values');
-        if (count($v->values()) === 1 || $v->query()) {
+        if (count($v->getValues()) === 1 || $v->query()) {
             return $query;
         }
 
-        $newQuery = $query->connection()->newQuery();
+        $newQuery = $query->getConnection()->newQuery();
         $cols = $v->columns();
         $placeholder = 0;
         $replaceQuery = false;
 
-        foreach ($v->values() as $k => $val) {
+        foreach ($v->getValues() as $k => $val) {
             $fillLength = count($cols) - count($val);
             if ($fillLength > 0) {
                 $val = array_merge($val, array_fill(0, $fillLength, null));
@@ -318,7 +318,7 @@ trait OracleDialectTrait
                 continue;
             }
 
-            $q = $newQuery->connection()->newQuery();
+            $q = $newQuery->getConnection()->newQuery();
             $newQuery->unionAll($q->select($select)->from('DUAL'));
         }
 

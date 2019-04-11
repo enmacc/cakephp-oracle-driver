@@ -399,7 +399,7 @@ class MethodLocatorTest extends TestCase
         $method = $this->_locator->get('users', ['method' => 'users']);
         $this->assertInstanceOf('CakeDC\OracleDriver\ORM\Method', $method);
         $this->assertEquals('users', $method->method());
-//        $this->assertSame($connection, $method->connection());
+//        $this->assertSame($connection, $method->getConnection());
 
 //        $this->assertEquals(array_keys($schema), $method->schema()->columns());
 //        $this->assertEquals($schema['id']['type'], $method->schema()->column('id')['type']);
@@ -411,7 +411,7 @@ class MethodLocatorTest extends TestCase
         $method = $this->_locator->get('users', ['className' => __NAMESPACE__ . '\MyUsersMethod']);
         $this->assertInstanceOf(__NAMESPACE__ . '\MyUsersMethod', $method);
         $this->assertEquals('users', $method->method());
-//        $this->assertSame($connection, $method->connection());
+//        $this->assertSame($connection, $method->getConnection());
 
 //        $this->assertEquals(array_keys($schema), $method->schema()->columns());
 //        $this->assertEquals($schema['id']['type'], $method->schema()->column('id')['type']);

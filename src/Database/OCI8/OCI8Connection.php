@@ -68,7 +68,7 @@ class OCI8Connection extends PDO
             throw OCI8Exception::fromErrorInfo(oci_error());
         }
 
-        $this->config($options);
+        $this->setConfig($options);
     }
 
     /**
@@ -113,8 +113,7 @@ class OCI8Connection extends PDO
         $args = func_get_args();
         $sql = $args[0];
         $stmt = $this->prepare($sql);
-        $stmt->execute();
-
+        $stmt->execute();        
         return $stmt;
     }
 

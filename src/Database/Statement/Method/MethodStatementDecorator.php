@@ -62,4 +62,12 @@ class MethodStatementDecorator extends StatementDecorator implements StatementIn
         $this->_statement->bindParam($column, $value, $type);
     }
 
+    public function count(): int {
+        
+    }
+
+    public function getIterator(): \Traversable {
+        
+    }
+
 }

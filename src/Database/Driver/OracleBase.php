@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright 2015 - 2016, Cake Development Corporation (http://cakedc.com)
  *
@@ -23,8 +22,8 @@ use Cake\Log\Log;
 use Cake\Network\Exception\NotImplementedException;
 use PDO;
 
-abstract class OracleBase extends Driver {
-
+abstract class OracleBase extends Driver
+{
     use ConfigTrait;
     use OracleDialectTrait;
     use PDODriverTrait;
@@ -63,7 +62,8 @@ abstract class OracleBase extends Driver {
      * 
      * @return bool true on success
      */
-    public function connect() {
+    public function connect()
+    {
         if ($this->_connection) {
             return true;
         }
@@ -80,20 +80,20 @@ abstract class OracleBase extends Driver {
          * se passati formati mask in ingresso creo gli script per eseguirli
          */
         if (isset($config['nls_date_format'])) {
-            $command = "ALTER SESSION SET NLS_DATE_FORMAT='" . $config['nls_date_format'] . "'";
+            $command = "ALTER SESSION SET NLS_DATE_FORMAT='".$config['nls_date_format']."'";
             array_push($config['init'], $command);
         }
         if (isset($config['nls_timestamp_format'])) {
-            $command = "ALTER SESSION SET NLS_TIMESTAMP_FORMAT='" . $config['nls_timestamp_format'] . "'";
+            $command = "ALTER SESSION SET NLS_TIMESTAMP_FORMAT='".$config['nls_timestamp_format']."'";
             array_push($config['init'], $command);
-            $command = "ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT='" . $config['nls_timestamp_format'] . "'";
+            $command = "ALTER SESSION SET NLS_TIMESTAMP_TZ_FORMAT='".$config['nls_timestamp_format']."'";
             array_push($config['init'], $command);
         }
         if (isset($config['nls_numeric_characters'])) {
-            $command = "ALTER SESSION SET NLS_NUMERIC_CHARACTERS ='" . $config['nls_numeric_characters'] . "'";
+            $command = "ALTER SESSION SET NLS_NUMERIC_CHARACTERS ='".$config['nls_numeric_characters']."'";
             array_push($config['init'], $command);
         }
-
+        
         $config['flags'] += [
             // PDO::ATTR_CASE => PDO::CASE_LOWER, // @todo move to config setting
             PDO::NULL_EMPTY_STRING => true,
@@ -106,9 +106,9 @@ abstract class OracleBase extends Driver {
         $this->_connect($dsn, $config);
 
         if (!empty($config['init'])) {
-            foreach ((array) $config['init'] as $command) {
-                $this->connection()
-                        ->exec($command);
+            foreach ((array)$config['init'] as $command) {
+                $this->getConnection()
+                     ->exec($command);
             }
         }
         return true;
@@ -119,7 +119,8 @@ abstract class OracleBase extends Driver {
      *
      * @return string
      */
-    public function getDSN() {
+    public function getDSN()
+    {
         $config = $this->_config;
         if (!empty($config['host'])) {
             if (empty($config['port'])) {
@@ -145,6 +146,7 @@ abstract class OracleBase extends Driver {
             }
 
             return '(DESCRIPTION=' . '(ADDRESS=(PROTOCOL=TCP)(HOST=' . $config['host'] . ')(PORT=' . $config['port'] . '))' . '(CONNECT_DATA=(' . $service . ')' . $instance . $pooled . '))';
+
         }
 
         return isset($config['database']) ? $config['database'] : '';
@@ -153,7 +155,8 @@ abstract class OracleBase extends Driver {
     /**
      * @inheritDoc
      */
-    public function supportsDynamicConstraints() {
+    public function supportsDynamicConstraints()
+    {
         // TODO: Implement supportsDynamicConstraints() method.
     }
 
@@ -163,7 +166,8 @@ abstract class OracleBase extends Driver {
      * @param string|\Cake\Database\Query $query The query to convert into a statement.
      * @return \Cake\Database\StatementInterface
      */
-    public function prepare($query) {
+    public function prepare($query)
+    {
         $this->connect();
         $isObject = ($query instanceof \Cake\ORM\Query) || ($query instanceof \Cake\Database\Query);
         $queryStringRaw = $isObject ? $query->sql() : $query;
@@ -185,7 +189,7 @@ abstract class OracleBase extends Driver {
             $disableBuffer = true;
         }
 
-        if ($isObject && $query->bufferResults() === false || $disableBuffer) {
+        if ($isObject && !$query->isBufferedResultsEnabled() || $disableBuffer) {
             $statement->bufferResults(false);
         }
         return $statement;
@@ -198,7 +202,8 @@ abstract class OracleBase extends Driver {
      * @param string $queryString query
      * @return string
      */
-    protected function _fromDualIfy($queryString) {
+    protected function _fromDualIfy($queryString)
+    {
         $statement = strtolower(trim($queryString));
         if (strpos($statement, 'select') !== 0 || preg_match('/ from /', $statement)) {
             return $queryString;
@@ -222,7 +227,8 @@ abstract class OracleBase extends Driver {
      *
      * @return string
      */
-    public function convertPositionalToNamedPlaceholders($query) {
+    public function convertPositionalToNamedPlaceholders($query)
+    {
         $count = 0;
         $inLiteral = false;
         $stmtLen = strlen($query);
@@ -246,7 +252,8 @@ abstract class OracleBase extends Driver {
     /**
      * @inheritDoc
      */
-    public function lastInsertId($table = null, $column = null) {
+    public function lastInsertId($table = null, $column = null)
+    {
         $sequenceName = 'seq_' . strtolower($table);
         $this->connect();
         $statement = $this->_connection->query("SELECT {$sequenceName}.CURRVAL FROM DUAL");
@@ -258,7 +265,8 @@ abstract class OracleBase extends Driver {
     /**
      * @inheritDoc
      */
-    public function isConnected() {
+    public function isConnected()
+    {
         if ($this->_connection === null) {
             $connected = false;
         } else {
@@ -278,8 +286,9 @@ abstract class OracleBase extends Driver {
      * @param string $identifier The identifier to quote.
      * @return string
      */
-    public function quoteIfAutoQuote($identifier) {
-        if ($this->autoQuoting()) {
+    public function quoteIfAutoQuote($identifier)
+    {
+        if ($this->isAutoQuotingEnabled()) {
             return $this->quoteIdentifier($identifier);
         }
         return $identifier;
@@ -291,7 +300,8 @@ abstract class OracleBase extends Driver {
      * @param Statement $statement Original statement to wrap.
      * @return OracleStatement
      */
-    protected function _wrapStatement($statement) {
+    protected function _wrapStatement($statement)
+    {
         return new OracleStatement(new PDOStatement($statement, $this), $this);
     }
 
@@ -300,7 +310,8 @@ abstract class OracleBase extends Driver {
      *
      * @return bool
      */
-    public function isOci() {
+    public function isOci()
+    {
         return false;
     }
 
@@ -311,7 +322,8 @@ abstract class OracleBase extends Driver {
      * @param array $options Statement options.
      * @return \Cake\Database\StatementInterface
      */
-    public function prepareMethod($queryString, $options = []) {
+    public function prepareMethod($queryString, $options = [])
+    {
         throw new NotImplementedException(__('method not implemented for this driver'));
     }
 

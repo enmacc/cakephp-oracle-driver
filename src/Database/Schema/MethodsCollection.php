@@ -46,7 +46,7 @@ class MethodsCollection
     public function __construct(ConnectionInterface $connection)
     {
         $this->_connection = $connection;
-        $this->_dialect = $connection->driver()->schemaDialect();
+        $this->_dialect = $connection->getDriver()->schemaDialect();
     }
 
     /**
@@ -57,7 +57,7 @@ class MethodsCollection
     public function listMethods()
     {
         // @todo fix this method to return only high level data
-        list($sql, $params) = $this->_dialect->listMethodsSql($this->_connection->config());
+        list($sql, $params) = $this->_dialect->listMethodsSql($this->_connection->getConfig());
         $result = [];
         $statement = $this->_connection->execute($sql, $params);
         while ($row = $statement->fetch()) {
@@ -75,7 +75,7 @@ class MethodsCollection
      */
     public function getMethod($name)
     {
-        $config = $this->_connection->config();
+        $config = $this->_connection->getConfig();
         $config['objectName'] = $name;
         list($sql, $params) = $this->_dialect->listMethodsSql($config);
         $result = [];
@@ -105,7 +105,7 @@ class MethodsCollection
      */
     public function describe($name, array $options = [])
     {
-        $config = $this->_connection->config();
+        $config = $this->_connection->getConfig();
         $methods = $this->getMethod($name);
         if (empty($methods)) {
             throw new Exception(sprintf('Cannot describe %s. Method not found.', $name));

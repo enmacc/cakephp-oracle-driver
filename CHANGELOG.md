@@ -1,6 +1,12 @@
 Changelog
 =========
 
+* 1.0.5 Porting Cake 3.7
+        
+        Dopo l'aggiornamento di cake il driver modificato per i deprecated
+        Errore nel parser? MethodStatementDecorator. Il fetch in  
+        /src/Database/Statement/OracleBufferedStatement.php lo lascio.. test
+
 * 1.0.4
     
         Errore nel model generation di cake, cambiato OracleSchema issue 4 su gitlab

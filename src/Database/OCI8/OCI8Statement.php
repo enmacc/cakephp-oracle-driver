@@ -260,7 +260,6 @@ class OCI8Statement extends \PDOStatement implements \IteratorAggregate
     public function getIterator()
     {
         $data = $this->fetchAll();
-
         return new \ArrayIterator($data);
     }
 
@@ -454,7 +453,7 @@ class OCI8Statement extends \PDOStatement implements \IteratorAggregate
      */
     public function getAttribute($attribute)
     {
-        return $this->_conn->config($attribute);
+        return $this->_conn->getConfig($attribute);
     }
 
     /**

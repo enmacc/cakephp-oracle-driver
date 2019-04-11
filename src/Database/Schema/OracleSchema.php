@@ -14,7 +14,7 @@ namespace CakeDC\OracleDriver\Database\Schema;
 use CakeDC\OracleDriver\Database\Exception\UnallowedDataTypeException;
 use Cake\Database\Exception;
 use Cake\Database\Schema\BaseSchema;
-use Cake\Database\Schema\Table;
+use Cake\Database\Schema\TableSchema as Table;
 use Cake\Database\Type;
 use Cake\Utility\Hash;
 
@@ -182,7 +182,9 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
                 break;
             case 'TIMESTAMP':
             case 'TIMESTAMP(6)':
+            case 'TIMESTAMP(6) WITH LOCAL TIME ZONE':
             case 'TIMESTAMP(9)':
+            case 'TIMESTAMP(9) WITH LOCAL TIME ZONE':
                 $field = [
                     'type' => 'timestamp',
                     'length' => null
@@ -556,9 +558,9 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
 
         $isIndex = $type === Table::INDEX_INDEX;
         if ($isIndex) {
-            $existing = $table->index($keyName);
+            $existing = $table->getIndex($keyName);
         } else {
-            $existing = $table->constraint($keyName);
+            $existing = $table->getConstraint($keyName);
         }
 
         if (!empty($existing)) {
@@ -658,7 +660,8 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
 	    'columns' => $this->_transformValueCase($row['column_name']),
             'references' => [
                 $row['referenced_owner'] . '.' . $row['referenced_table_name'],
-                strtoupper($row['referenced_column_name'])
+                //strtoupper($row['referenced_column_name'])
+                $this->_transformValueCase($row['referenced_column_name'])
             ],
             'update' => Table::ACTION_SET_NULL,
             'delete' => $this->_convertOnClause($row['delete_rule']),
@@ -770,7 +773,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
         $sql = [];
 
         foreach ($table->constraints() as $name) {
-            $constraint = $table->constraint($name);
+            $constraint = $table->getConstraint($name);
             if ($constraint['type'] === Table::CONSTRAINT_FOREIGN) {
                 $tableName = $this->_driver->quoteIfAutoQuote($table->name());
                 $sql[] = sprintf($sqlPattern, $tableName, $this->constraintSql($table, $name));
@@ -789,7 +792,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
         $sql = [];
 
         foreach ($table->constraints() as $name) {
-            $constraint = $table->constraint($name);
+            $constraint = $table->getConstraint($name);
             if ($constraint['type'] === Table::CONSTRAINT_FOREIGN) {
                 $tableName = $this->_driver->quoteIfAutoQuote($table->name());
                 $constraintName = $this->_driver->quoteIfAutoQuote($name);
@@ -805,7 +808,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
      */
     public function indexSql(Table $table, $name)
     {
-        $data = $table->index($name);
+        $data = $table->getIndex($name);
         $columns = array_map([
             $this->_driver,
             'quoteIfAutoQuote'
@@ -819,7 +822,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
      */
     public function constraintSql(Table $table, $name)
     {
-        $data = $table->constraint($name);
+        $data = $table->getConstraint($name);
         $out = 'CONSTRAINT ' . $this->_driver->quoteIfAutoQuote($name);
         if ($data['type'] === Table::CONSTRAINT_PRIMARY) {
             $out = 'PRIMARY KEY';
@@ -942,7 +945,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
     {
         $constraints = $table->constraints();
         foreach ($constraints as $name) {
-            $constraint = $table->constraint($name);
+            $constraint = $table->getConstraint($name);
             if ($this->_isSingleKey($table, [$constraint])) {
                 return $constraint;
             }

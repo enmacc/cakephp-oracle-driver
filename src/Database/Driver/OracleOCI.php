@@ -28,7 +28,7 @@ class OracleOCI extends OracleBase
 	// RUG: passo la configurazione completa alla connection
         // $connection = new OCI8Connection($dsn, $config['username'], $config['password'], $config['flags']);
         $connection = new OCI8Connection($dsn, $config['username'], $config['password'], $config);	
-        $this->connection($connection);
+        $this->setConnection($connection);
         return true;
 
     }

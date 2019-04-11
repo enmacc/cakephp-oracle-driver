@@ -60,7 +60,7 @@ class Method
             $this->method($config['method']);
         }
         if (!empty($config['connection'])) {
-            $this->connection($config['connection']);
+            $this->setConnection($config['connection']);
         }
         if (!empty($config['schema'])) {
             $this->schema($config['schema']);
@@ -120,7 +120,7 @@ class Method
     {
         if ($schema === null) {
             if ($this->_schema === null) {
-                $this->_schema = $this->_initializeSchema($this->connection()
+                $this->_schema = $this->_initializeSchema($this->getConnection()
                                                                ->methodSchemaCollection()
                                                                ->describe($this->method()));
             }
@@ -245,7 +245,7 @@ class Method
     public function execute(RequestInterface $request)
     {
         $query = $this->_generateSql();
-        $statement = $this->connection()
+        $statement = $this->getConnection()
                           ->prepareMethod($query);
         $request->attachTo($statement);
         $result = $statement->execute();
@@ -294,7 +294,7 @@ class Method
      */
     public function __debugInfo()
     {
-        $conn = $this->connection();
+        $conn = $this->getConnection();
         return [
             'method' => $this->method(),
             'defaultConnection' => $this->defaultConnectionName(),

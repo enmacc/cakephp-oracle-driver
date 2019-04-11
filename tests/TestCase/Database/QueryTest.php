@@ -86,7 +86,7 @@ class QueryTest extends CakeQueryTest
         $this->assertEquals(['id' => 2], $result->fetch('assoc'));
         $this->assertEquals(['id' => 3], $result->fetch('assoc'));
 
-        $driver = $query->connection()->driver();
+        $driver = $query->getConnection()->getDriver();
         $idField = $driver->quoteIfAutoQuote('id');
         $expression = $query->newExpr(["MOD(($idField + :offset), 2)"]);
         $result = $query
@@ -402,7 +402,7 @@ class QueryTest extends CakeQueryTest
     public function testBind()
     {
         $query = new Query($this->connection);
-        $driver = $query->connection()->driver();
+        $driver = $query->getConnection()->getDriver();
         $createdField = $driver->quoteIfAutoQuote('created');
         $results = $query->select(['id', 'comment'])
             ->from('comments')
@@ -439,7 +439,7 @@ class QueryTest extends CakeQueryTest
         $result->closeCursor();
 
         //PDO_SQLSRV returns -1 for successful inserts when using INSERT ... OUTPUT
-        if (!$this->connection->driver() instanceof \Cake\Database\Driver\Sqlserver) {
+        if (!$this->connection->getDriver() instanceof \Cake\Database\Driver\Sqlserver) {
             $this->assertCount(1, $result);
         }
 
@@ -469,7 +469,7 @@ class QueryTest extends CakeQueryTest
         $result = $query->execute();
         $result->closeCursor();
         //PDO_SQLSRV returns -1 for successful inserts when using INSERT ... OUTPUT
-        if (!$this->connection->driver() instanceof \Cake\Database\Driver\Sqlserver) {
+        if (!$this->connection->getDriver() instanceof \Cake\Database\Driver\Sqlserver) {
             $this->assertCount(1, $result);
         }
 
@@ -546,7 +546,7 @@ class QueryTest extends CakeQueryTest
     public function testUnionOrderBy()
     {
         $this->skipIf(
-            ($this->connection->driver() instanceof \CakeDC\OracleDriver\Database\Driver\OracleBase),
+            ($this->connection->getDriver() instanceof \CakeDC\OracleDriver\Database\Driver\OracleBase),
             'Driver does not support ORDER BY in UNIONed queries.'
         );
         parent::testUnionOrderBy();

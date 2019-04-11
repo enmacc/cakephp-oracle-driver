@@ -35,37 +35,37 @@ trait ConfigTrait
      * Reading the whole config:
      *
      * ```
-     * $this->config();
+     * $this->getConfig();
      * ```
      *
      * Reading a specific value:
      *
      * ```
-     * $this->config('key');
+     * $this->getConfig('key');
      * ```
      *
      * Reading a nested value:
      *
      * ```
-     * $this->config('some.nested.key');
+     * $this->getConfig('some.nested.key');
      * ```
      *
      * Setting a specific value:
      *
      * ```
-     * $this->config('key', $value);
+     * $this->setConfig('key', $value);
      * ```
      *
      * Setting a nested value:
      *
      * ```
-     * $this->config('some.nested.key', $value);
+     * $this->setConfig('some.nested.key', $value);
      * ```
      *
      * Updating multiple config settings at the same time:
      *
      * ```
-     * $this->config(['one' => 'value', 'another' => 'value']);
+     * $this->setConfig(['one' => 'value', 'another' => 'value']);
      * ```
      *
      * @param string|array|null $key The key to get/set, or a complete array of configs.
@@ -221,19 +221,19 @@ trait ConfigTrait
      * Setting a specific value:
      *
      * ```
-     * $this->config('key', $value);
+     * $this->setConfig('key', $value);
      * ```
      *
      * Setting a nested value:
      *
      * ```
-     * $this->config('some.nested.key', $value);
+     * $this->setConfig('some.nested.key', $value);
      * ```
      *
      * Updating multiple config settings at the same time:
      *
      * ```
-     * $this->config(['one' => 'value', 'another' => 'value']);
+     * $this->setConfig(['one' => 'value', 'another' => 'value']);
      * ```
      *
      * @param string|array $key The key to set, or a complete array of configs.

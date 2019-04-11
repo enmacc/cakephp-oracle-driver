@@ -39,7 +39,6 @@ class OracleStatement extends StatementDecorator
         if ($this->_bufferResults) {
             $this->_statement = new OracleBufferedStatement($this->_statement, $this->_driver);
         }
-
         return $this->_statement->execute($params);
     }
 

@@ -322,7 +322,7 @@ class OracleFixtureManager
         foreach ($fixtures as $f) {
             if (!empty($this->_loaded[$f])) {
                 $fixture = $this->_loaded[$f];
-                $dbs[$fixture->connection()][$f] = $fixture;
+                $dbs[$fixture->getConnection()][$f] = $fixture;
             }
         }
         return $dbs;
@@ -352,7 +352,7 @@ class OracleFixtureManager
         if (isset($this->_fixtureMap[$name])) {
             $fixture = $this->_fixtureMap[$name];
             if (!$db) {
-                $db = ConnectionManager::get($fixture->connection());
+                $db = ConnectionManager::get($fixture->getConnection());
             }
 
             if (!$this->isFixtureSetup($db->configName(), $fixture)) {

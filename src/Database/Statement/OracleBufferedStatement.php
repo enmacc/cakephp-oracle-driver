@@ -23,7 +23,10 @@ class OracleBufferedStatement extends BufferedStatement
 
     /**
      * {@inheritDoc}
-     */
+     * 
+     * RUG: nella versione Cake 3.7 non serve piu
+     * altrimenti non torna nessun dato
+     * 
     public function fetch($type = 'num')
     {
         if ($this->_allFetched) {
@@ -53,5 +56,5 @@ class OracleBufferedStatement extends BufferedStatement
         $this->_count++;
         return $this->_records[] = $record;
     }
-
+     */
 }
