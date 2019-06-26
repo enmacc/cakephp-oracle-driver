@@ -691,7 +691,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
      */
     public function columnSql(Table $table, $name)
     {
-        $data = $table->column($name);
+        $data = $table->getColumn($name);
         $out = $this->_driver->quoteIfAutoQuote($name);
         $flagDefault = false;
         $typeMap = [
@@ -863,14 +863,14 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
         $content = array_merge($columns, $constraints);
         $content = implode(",\n", array_filter($content));
         $tableName = $this->_driver->quoteIfAutoQuote($table->name());
-        $temporary = $table->temporary() ? ' TEMPORARY ' : ' ';
+        $temporary = $table->isTemporary() ? ' TEMPORARY ' : ' ';
         $out = [];
         $out[] = sprintf("CREATE%sTABLE %s (\n%s\n)", $temporary, $tableName, $content);
         foreach ($indexes as $index) {
             $out[] = $index;
         }
         foreach ($table->columns() as $column) {
-            $columnData = $table->column($column);
+            $columnData = $table->getColumn($column);
             if (isset($columnData['comment'])) {
                 $out[] = sprintf('COMMENT ON COLUMN %s.%s IS %s', $tableName, $this->_driver->quoteIfAutoQuote($column),
                     $this->_driver->schemaValue($columnData['comment']));
@@ -970,7 +970,7 @@ WHERE 1=1 " . ($useOwner ? $ownerCondition : '') . $objectCondition . " ORDER BY
         if (count($columns) !== 1) {
             return false;
         }
-        $column = $table->column($columns[0]);
+        $column = $table->getColumn($columns[0]);
         return ($column['type'] === 'integer' && $constraint['type'] === Table::CONSTRAINT_PRIMARY);
     }
 
